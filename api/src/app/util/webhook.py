@@ -23,7 +23,7 @@ from typing import Any, Mapping
 # Configuration
 # -----------------------------------------------------------------------------
 # Only allow POSTs to URLs that start with one of these roots (prevents exfiltration)
-ALLOWED_ROOTS = os.getenv("BUBBLE_DOMAIN_ROOTS", "https://rgtnow.com").split(",")
+ALLOWED_ROOTS = os.getenv("DOMAIN_WHITELIST", "https://rgtnow.com").split(",")
 
 # Optional default timeout (seconds) for outbound webhook calls.
 HTTP_TIMEOUT = float(os.getenv("WEBHOOK_TIMEOUT", "10"))
