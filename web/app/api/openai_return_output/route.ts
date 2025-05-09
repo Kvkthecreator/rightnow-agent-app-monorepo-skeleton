@@ -1,8 +1,24 @@
-import type { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from 'next/server'
+import { supabaseAdmin } from '@/lib/supabaseServerClient'
 
 export async function POST(req: NextRequest) {
-  const payload = await req.json();
-  console.log("Clarification payload:", payload);
-  // TODO: store it
-  return new Response(JSON.stringify({ ok: true }), { status: 200 });
+  const payload = await req.json()
+
+  const { data, error } = await supabaseAdmin
+    .from('agent_messages')
+    .insert([{
+      task_id:        payload.task_id,
+      user_id:        payload.user_id,
+      agent_type:     payload.agent_type,
+      message_type:   payload.message_type,
+      message_content: payload.message_content,
+      created_at:     payload.created_at,  // optional: Supabase default will override if you omit
+    }])
+
+  if (error) {
+    console.error('Supabase insert error:', error)
+    return new NextResponse(JSON.stringify({ error: error.message }), { status: 500 })
+  }
+
+  return NextResponse.json({ ok: true, record: data![0] })
 }
