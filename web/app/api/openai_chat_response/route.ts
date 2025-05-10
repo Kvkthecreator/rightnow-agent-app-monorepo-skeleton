@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabaseAdmin } from '@/lib/supabaseServerClient'
+import { getSupabaseAdmin } from '@/lib/supabaseServerClient'
 
 export async function POST(req: NextRequest) {
   const payload = await req.json()
+
+  const supabaseAdmin = getSupabaseAdmin()
 
   const { data, error } = await supabaseAdmin
     .from('agent_messages')
