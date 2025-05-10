@@ -2,6 +2,13 @@ import { NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabaseServerClient";
 
 export async function POST(req: Request) {
+  
+  console.log("▶️  GOT INTO VERCEL POST");
+  console.log("▶️  ENV:", {
+  SUPABASE_URL:      process.env.NEXT_PUBLIC_SUPABASE_URL,
+  SERVICE_ROLE_KEY:  !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+  }); 
+
   let payload;
   try {
     payload = await req.json();
