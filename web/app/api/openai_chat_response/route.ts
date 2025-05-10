@@ -23,12 +23,13 @@ export async function POST(req: Request) {
       message_type:   payload.message_type,
       message_content: payload.message_content,
     });
+    .select();  
 
   if (error) {
     console.error("❌ Supabase insert error:", error);
     return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
   }
 
-  console.log("✅ Inserted message:", data);
-  return NextResponse.json({ ok: true });
+console.log("✅ Supabase insert success:", data);
+return NextResponse.json({ ok: true, data }, { status: 200 });
 }
