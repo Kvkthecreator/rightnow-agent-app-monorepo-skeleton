@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { supabaseAdmin } from "@/lib/supabaseServerClient";
+import { getSupabaseAdmin } from "@/lib/supabaseServerClient";
 
 export async function POST(req: Request) {
   let payload;
@@ -11,15 +11,17 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: "Invalid JSON" }, { status: 400 });
   }
 
+  // instantiate the admin client
+  const supabaseAdmin = getSupabaseAdmin();
+
   const { data, error } = await supabaseAdmin
     .from("agent_messages")
     .insert({
-      task_id:       payload.task_id,
-      user_id:       payload.user_id,
-      agent_type:    payload.agent_type,
-      message_type:  payload.message_type,
+      task_id:        payload.task_id,
+      user_id:        payload.user_id,
+      agent_type:     payload.agent_type,
+      message_type:   payload.message_type,
       message_content: payload.message_content,
-      // created_at will default if you didn’t explicitly set it here
     });
 
   if (error) {
