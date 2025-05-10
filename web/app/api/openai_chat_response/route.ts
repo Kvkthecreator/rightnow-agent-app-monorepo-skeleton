@@ -22,8 +22,8 @@ export async function POST(req: Request) {
       agent_type:     payload.agent_type,
       message_type:   payload.message_type,
       message_content: payload.message_content,
-    });
-    .select();  
+    })
+    .select()
 
   if (error) {
     console.error("❌ Supabase insert error:", error);
