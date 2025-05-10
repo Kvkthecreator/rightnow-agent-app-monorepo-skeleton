@@ -1,3 +1,9 @@
+console.log('👉 Render dispatch hit this handler', {
+  url: process.env.NEXT_PUBLIC_API_URL,
+  incoming: true,
+})
+
+
 import { NextRequest, NextResponse } from 'next/server'
 import { getSupabaseAdmin } from '@/lib/supabaseServerClient'
 
