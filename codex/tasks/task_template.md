@@ -13,6 +13,11 @@ Clearly describe what this improvement or task should accomplish.
 ```
 Write your full prompt to Codex here, as if you're asking a smart assistant to do the work.
 Include specifics like function names, structure expectations, or anti-patterns to avoid.
+
+Also:
+- Log reasoning, iterations, and accepted/rejected decisions into `codex/sessions/<task-name>-session.md`
+- If multiple versions or drafts are relevant, save them in `codex/drafts/<descriptive-name>.tsx`
+- Use the task file name `codex/tasks/<task-name>.md` as reference context
 ```
 
 ## 🗂 Context
@@ -34,17 +39,8 @@ git checkout -b refactor-profilebuilder-agent
 ```
 
 ## 📥 Codex Output Summary (optional)
-Paste Codex’s responses here for tracking.
+Paste Codex’s responses, variations, and decisions here.
 
 ---
-> You can copy this file to create any new task:
-> 
+> To create a new task, copy this file:
 > `cp task_template.md refactor-profilebuilder-agent.md`
-
-
-## 📥 Codex modular workflow.
-This project uses a modular Codex workflow. 
-If relevant, please:
-- Save iterative versions or alternate implementations into `codex/drafts/`
-- Log session notes or discussion summaries into `codex/sessions/`
-- Keep all logic modular, and aligned to the file noted in this task
