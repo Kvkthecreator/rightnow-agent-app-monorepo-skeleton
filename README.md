@@ -32,6 +32,8 @@ codex
 > Explain this error
 > Help me refactor this route
 ```
+See [codex_workflow_guide.md](./codex/codex_workflow_guide.md) for the full Codex workflow playbook.
+
 ## 🛠 Development Setup
 
 This app uses a hosted architecture for backend and database, simplifying local development.
