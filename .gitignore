@@ -100,6 +100,7 @@ celerybeat.pid
 
 # Environments
 .env
+*.env
 .venv
 env/
 venv/
@@ -142,3 +143,12 @@ cython_debug/
 # PyPI configuration file
 .pypircopenai_agents/
 openai_agents/
+
+# Node / Web
+/web/.next/
+/web/node_modules/
+/web/.env.local
+
+# Python
+/api/.venv/
+/api/poetry.lock
