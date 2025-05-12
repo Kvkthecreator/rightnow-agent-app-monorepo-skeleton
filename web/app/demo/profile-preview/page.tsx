@@ -9,7 +9,7 @@ export default function ProfilePreviewPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background p-10">
+    <div className="p-4 bg-background min-h-full">
       <h1 className="text-xl font-semibold text-foreground mb-6">🧪 ProfileForm Preview</h1>
       <ProfileForm onSubmit={handleProfileSubmit} />
     </div>
