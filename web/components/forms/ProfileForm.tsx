@@ -42,7 +42,7 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
     defaultValues: {
       name: defaultValues?.name ?? "",
       bio: defaultValues?.bio ?? "",
-      goal: defaultValues?.goal,
+      // 🔥 Removed 'goal' — let react-hook-form handle it
     },
   });
 
