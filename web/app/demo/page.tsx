@@ -13,7 +13,7 @@ export default function DemoPage() {
   });
   const onSubmit = (data: any) => console.log(data);
   return (
-    <main className="p-10 space-y-6 bg-gray-50 dark:bg-gray-950 min-h-screen">
+    <div className="p-4 space-y-6 bg-gray-50 dark:bg-gray-950 min-h-full">
       <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">🌈 Design System Preview</h1>
 
       <Card>
@@ -58,6 +58,6 @@ export default function DemoPage() {
           <Button type="submit">Submit</Button>
         </form>
       </section>
-    </main>
+    </div>
   )
 }
