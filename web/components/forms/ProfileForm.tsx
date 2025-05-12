@@ -42,7 +42,7 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({
     defaultValues: {
       name: defaultValues?.name ?? "",
       bio: defaultValues?.bio ?? "",
-      goal: defaultValues?.goal ?? "",
+      goal: defaultValues?.goal,
     },
   });
 
