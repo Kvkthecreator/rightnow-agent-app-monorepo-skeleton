@@ -44,3 +44,10 @@ Paste Codex’s responses, variations, and decisions here.
 ---
 > To create a new task, copy this file:
 > `cp task_template.md refactor-profilebuilder-agent.md`
+
+### 🔁 Codex Instructions – Project Conventions
+
+- **Import statements should never include `.tsx` or `.ts` extensions**.
+  - ✅ `import Header from '../components/Header'`
+  - ❌ `import Header from '../components/Header.tsx'`
+  - Reason: This breaks builds on Vercel and most production Linux environments unless `allowImportingTsExtensions` is set (which we don't use).
