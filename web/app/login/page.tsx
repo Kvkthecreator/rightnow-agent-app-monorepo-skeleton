@@ -1,32 +1,28 @@
 "use client";
 
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
-import { Button } from '@/components/ui/Button';
-import Link from 'next/link';
-import { createClient } from '@/lib/supabaseClient';
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { createClient } from "@/lib/supabaseClient";
 
 export default function LoginPage() {
   const router = useRouter();
   const supabase = createClient();
 
+  // If already signed in, redirect immediately
   useEffect(() => {
-    async function checkSession() {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+    supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
-        router.replace('/demo');
+        router.replace("/demo");
       }
-    }
-    checkSession();
+    });
   }, [router, supabase]);
 
-  const signInWithGoogle = () => {
-    supabase.auth.signInWithOAuth({
-      provider: 'google',
+  // Handler for your “Login with Google” button
+  const handleGoogleLogin = async () => {
+    await supabase.auth.signInWithOAuth({
+      provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
       },
     });
   };
