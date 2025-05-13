@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import DashboardLayout from "@/components/layouts/DashboardLayout";
+// Removed DashboardLayout import, using direct children in root layout
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,10 +28,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {/* Wrap pages with dashboard layout when applicable */}
-        <DashboardLayout>
-          {children}
-        </DashboardLayout>
+        {children}
       </body>
     </html>
   );

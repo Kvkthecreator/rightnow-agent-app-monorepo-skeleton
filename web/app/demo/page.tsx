@@ -43,8 +43,10 @@ export default function DemoPage() {
   }
   const onSubmit = (data: any) => console.log(data);
   return (
-    <div className="p-4 space-y-6 bg-gray-50 dark:bg-gray-950 min-h-full">
-      <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">🌈 Design System Preview</h1>
+    <div className="space-y-6">
+      <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+        🌈 Design System Preview
+      </h1>
 
       <Card>
         <h2 className="text-lg font-semibold mb-4">Card Component</h2>
@@ -58,6 +60,7 @@ export default function DemoPage() {
         <Button variant="outline">Outline Button</Button>
         <Button variant="ghost">Ghost Button</Button>
       </div>
+
       <section className="space-y-4">
         <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
           📋 Form Demo
@@ -89,5 +92,5 @@ export default function DemoPage() {
         </form>
       </section>
     </div>
-  )
+  );
 }
