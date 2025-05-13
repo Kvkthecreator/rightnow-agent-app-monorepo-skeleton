@@ -45,7 +45,7 @@ export default function LoginPage() {
             <span className="px-2 text-sm text-gray-500">Or continue with</span>
             <div className="h-px flex-1 bg-gray-200" />
           </div>
-          <Button onClick={signInWithGoogle} className="w-full">
+          <Button onClick={handleGoogleLogin} className="w-full">
             <span className="mr-2 text-xl font-bold">G</span>
             Login with Google
           </Button>
