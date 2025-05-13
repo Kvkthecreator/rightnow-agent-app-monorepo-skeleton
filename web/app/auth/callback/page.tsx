@@ -12,7 +12,7 @@ export default function AuthCallbackPage() {
     async function handleAuth() {
       try {
         // Exchange the OAuth code in the URL for a session and persist it
-        const { data: { session }, error } = await supabase.auth.exchangeCodeForSession();
+        const { data: { session }, error } = await supabase.auth.exchangeCodeForSession(window.location.href);
         if (error || !session) {
           console.error('Error exchanging code for session:', error);
           router.replace('/login');
