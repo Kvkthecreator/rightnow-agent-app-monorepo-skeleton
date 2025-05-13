@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabaseClient";
@@ -17,6 +18,7 @@ export default function UserNav() {
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
+  // Fetch initial session and redirect if not authenticated
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
@@ -27,10 +29,12 @@ export default function UserNav() {
     });
   }, [supabase, router]);
 
+  // Subscribe to auth state changes for auto-refresh and logout
   useEffect(() => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("[Auth]", event, session);
       if (session?.user) {
         setUser({ email: session.user.email || "" });
       } else {
@@ -43,6 +47,7 @@ export default function UserNav() {
     };
   }, [supabase, router]);
 
+  // Close dropdown on outside click
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (ref.current && !ref.current.contains(event.target as Node)) {
