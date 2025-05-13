@@ -1,13 +1,34 @@
 "use client";
 
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
-import { Chrome } from 'lucide-react';
+import { createClient } from '@/lib/supabaseClient';
 
 export default function LoginPage() {
-  // Placeholder for Google sign-in logic
+  const router = useRouter();
+  const supabase = createClient();
+
+  useEffect(() => {
+    async function checkSession() {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (session) {
+        router.replace('/demo');
+      }
+    }
+    checkSession();
+  }, [router, supabase]);
+
   const signInWithGoogle = () => {
-    console.log('signInWithGoogle called');
+    supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
   };
 
   return (
@@ -21,14 +42,13 @@ export default function LoginPage() {
       <div className="w-full max-w-sm rounded-lg shadow-sm p-6 bg-white">
         <div className="space-y-4">
           <h2 className="text-2xl font-bold text-center">Welcome back</h2>
-          <p className="text-sm text-center text-gray-500">Login with your Google account</p>
           <div className="flex items-center">
             <div className="h-px flex-1 bg-gray-200" />
             <span className="px-2 text-sm text-gray-500">Or continue with</span>
             <div className="h-px flex-1 bg-gray-200" />
           </div>
           <Button onClick={signInWithGoogle} className="w-full">
-            <Chrome className="mr-2 h-4 w-4" />
+            <span className="mr-2 text-xl font-bold">G</span>
             Login with Google
           </Button>
         </div>
