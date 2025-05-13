@@ -9,8 +9,21 @@ function Header() {
 
 function Footer() {
   return (
-    <footer className="w-full py-4 px-8 text-center text-gray-500 text-sm">
-      © 2024 Your Company. All rights reserved.
+    <footer className="w-full py-4 px-8 bg-transparent">
+      <div className="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center text-gray-500 text-xs">
+        <div className="text-center sm:text-left space-y-1">
+          <p>Korean Business Reg.: 220-28-01801 | Business Name: rightnow entertainment</p>
+          <p>Business Owner: KIM SEUL KI | Contact Email: contactus@rgtnow.com</p>
+        </div>
+        <div className="flex space-x-4 mt-2 sm:mt-0">
+          <a href="/terms" className="underline hover:text-gray-700">
+            Terms of Service
+          </a>
+          <a href="/privacy" className="underline hover:text-gray-700">
+            Privacy Policy
+          </a>
+        </div>
+      </div>
     </footer>
   );
 }
