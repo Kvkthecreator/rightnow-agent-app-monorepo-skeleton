@@ -1,20 +1,27 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
-export function middleware(req: NextRequest) {
-  const url = req.nextUrl.clone();
-  const session = req.cookies.get('sb-access-token');
+export async function middleware(req: NextRequest) {
+  const res = NextResponse.next();
+
+  // Supabase session detection using helper
+  const supabase = createMiddlewareClient({ req, res });
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
 
   const protectedPaths = ['/demo'];
   const isProtected = protectedPaths.some((path) =>
-    url.pathname.startsWith(path)
+    req.nextUrl.pathname.startsWith(path)
   );
 
   if (isProtected && !session) {
-    return NextResponse.redirect(new URL('/login', url));
+    return NextResponse.redirect(new URL('/login', req.url));
   }
 
-  return NextResponse.next();
+  return res;
 }
 
 export const config = {
