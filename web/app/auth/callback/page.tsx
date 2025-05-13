@@ -12,7 +12,7 @@ export default function AuthCallbackPage() {
     async function handleAuth() {
       try {
         // Parse session from the URL and handle OAuth code exchange
-        const { data: { session }, error } = await supabase.auth.getSessionFromUrl();
+        const { data: { session }, error } = await supabase.auth.getSession();
         if (error || !session) {
           router.replace('/login');
         } else {
