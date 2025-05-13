@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import Link from "next/link";
 import { createClient } from "@/lib/supabaseClient";
 import { Button } from "@/components/ui/Button";
 
