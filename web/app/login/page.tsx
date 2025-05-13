@@ -22,12 +22,15 @@ export default function LoginPage() {
 
   // Handler for your “Login with Google” button
   const handleGoogleLogin = async () => {
-    await supabase.auth.signInWithOAuth({
+    // Redirect to our auth callback after Google sign-in
+    const redirectTo = `${window.location.origin}/auth/callback`;
+    const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: {
-        redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
-      },
+      options: { redirectTo },
     });
+    if (error) {
+      console.error("Error logging in with Google:", error.message);
+    }
   };
 
   return (

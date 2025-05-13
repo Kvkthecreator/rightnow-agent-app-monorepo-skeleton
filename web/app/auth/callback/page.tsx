@@ -10,11 +10,17 @@ export default function AuthCallbackPage() {
   useEffect(() => {
     const supabase = createClient();
     async function handleAuth() {
-      const { data: { session }, error } = await supabase.auth.getSession();
-      if (error || !session) {
+      try {
+        // Parse session from the URL and handle OAuth code exchange
+        const { data: { session }, error } = await supabase.auth.getSessionFromUrl();
+        if (error || !session) {
+          router.replace('/login');
+        } else {
+          router.replace('/demo');
+        }
+      } catch (err) {
+        console.error("Error handling auth callback:", err);
         router.replace('/login');
-      } else {
-        router.replace('/demo');
       }
     }
     handleAuth();
