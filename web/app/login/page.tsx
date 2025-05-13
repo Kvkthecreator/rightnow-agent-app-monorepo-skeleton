@@ -1,0 +1,49 @@
+"use client";
+
+import { Button } from '@/components/ui/Button';
+import Link from 'next/link';
+import { Chrome } from 'lucide-react';
+
+export default function LoginPage() {
+  // Placeholder for Google sign-in logic
+  const signInWithGoogle = () => {
+    console.log('signInWithGoogle called');
+  };
+
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen bg-muted p-4">
+      {/* Branding */}
+      <div className="flex items-center space-x-2 mb-6">
+        <span className="text-3xl">🚀</span>
+        <span className="text-2xl font-bold">rgtNOW</span>
+      </div>
+      {/* Login Card */}
+      <div className="w-full max-w-sm rounded-lg shadow-sm p-6 bg-white">
+        <div className="space-y-4">
+          <h2 className="text-2xl font-bold text-center">Welcome back</h2>
+          <p className="text-sm text-center text-gray-500">Login with your Google account</p>
+          <div className="flex items-center">
+            <div className="h-px flex-1 bg-gray-200" />
+            <span className="px-2 text-sm text-gray-500">Or continue with</span>
+            <div className="h-px flex-1 bg-gray-200" />
+          </div>
+          <Button onClick={signInWithGoogle} className="w-full">
+            <Chrome className="mr-2 h-4 w-4" />
+            Login with Google
+          </Button>
+        </div>
+      </div>
+      {/* Policy Links */}
+      <p className="text-sm font-medium text-center mt-4">
+        By clicking continue, you agree to our{' '}
+        <Link href="/terms" className="underline hover:text-gray-700">
+          Terms of Service
+        </Link>{' '}
+        and{' '}
+        <Link href="/privacy" className="underline hover:text-gray-700">
+          Privacy Policy
+        </Link>.
+      </p>
+    </div>
+  );
+}
