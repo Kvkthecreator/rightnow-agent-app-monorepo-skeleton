@@ -6,11 +6,41 @@ import { TextareaField } from "@/components/ui/TextareaField";
 import { SelectField } from "@/components/ui/SelectField";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabaseClient";
 
 export default function DemoPage() {
-  const { control, handleSubmit } = useForm({
-    defaultValues: { firstName: "", bio: "", role: "" },
-  });
+  const supabase = createClient();
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
+  const { control, handleSubmit } = useForm({ defaultValues: { firstName: "", bio: "", role: "" } });
+
+  // Protect route: redirect to login if not authenticated
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) {
+        router.replace("/login");
+      } else {
+        setIsLoading(false);
+      }
+    });
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("[Auth]", event, session);
+      if (!session) {
+        router.replace("/login");
+      }
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [router, supabase]);
+
+  if (isLoading) {
+    return null;
+  }
   const onSubmit = (data: any) => console.log(data);
   return (
     <div className="p-4 space-y-6 bg-gray-50 dark:bg-gray-950 min-h-full">

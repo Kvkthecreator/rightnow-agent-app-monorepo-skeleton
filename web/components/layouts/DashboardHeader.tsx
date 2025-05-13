@@ -3,6 +3,7 @@
 import { FC } from "react";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import UserDropdown from "@/components/UserDropdown";
 
 interface DashboardHeaderProps {
   onNavToggle?: () => void;
@@ -19,8 +20,8 @@ const DashboardHeader: FC<DashboardHeaderProps> = ({ onNavToggle }) => {
       <div className="flex-1 flex items-center justify-center md:justify-start">
         {/* Optional: Breadcrumb or page title */}
       </div>
-      <div>
-        {/* Optional: Profile avatar or actions */}
+      <div className="flex items-center">
+        <UserDropdown />
       </div>
     </header>
   );
