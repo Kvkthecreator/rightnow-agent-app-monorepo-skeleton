@@ -6,25 +6,23 @@ import { createClient } from '@/lib/supabaseClient';
 
 export default function AuthCallbackPage() {
   const router = useRouter();
-  const supabase = createClient();
 
   useEffect(() => {
+    const supabase = createClient();
     async function handleAuth() {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (session) {
-        router.replace('/demo');
-      } else {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (error || !session) {
         router.replace('/login');
+      } else {
+        router.replace('/demo');
       }
     }
     handleAuth();
-  }, [router, supabase]);
+  }, [router]);
 
   return (
     <div className="flex items-center justify-center h-screen">
-      <p>Loading...</p>
+      <p>Redirecting...</p>
     </div>
   );
 }
