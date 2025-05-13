@@ -11,7 +11,12 @@ interface User {
   email: string;
 }
 
-export default function UserNav() {
+interface UserNavProps {
+  /** Hide user email, show only icon (for compact sidebar) */
+  compact?: boolean;
+}
+
+export default function UserNav({ compact = false }: UserNavProps) {
   const router = useRouter();
   const supabase = createClient();
   const [user, setUser] = useState<User | null>(null);
@@ -75,10 +80,10 @@ export default function UserNav() {
       <Button
         variant="ghost"
         onClick={() => setIsOpen((prev) => !prev)}
-        className="flex items-center space-x-2"
+        className={compact ? "flex justify-center p-2" : "flex items-center space-x-2"}
       >
         <UserIcon className="h-5 w-5" />
-        <span className="text-sm font-medium">{user.email}</span>
+        {!compact && <span className="text-sm font-medium">{user.email}</span>}
       </Button>
       {isOpen && (
         <Card className="absolute right-0 mt-2 w-48 p-2">

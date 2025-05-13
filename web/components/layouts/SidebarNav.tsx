@@ -1,8 +1,9 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, User } from "lucide-react";
+import { Home, User, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/Button";
 import UserNav from "@/components/UserNav";
 
 interface NavItem {
@@ -17,10 +18,13 @@ const navItems: NavItem[] = [
 ];
 
 interface SidebarNavProps {
+  /** Collapse sidebar width on desktop */
   collapsed?: boolean;
+  /** Toggle collapse state (desktop) */
+  onCollapseToggle?: () => void;
 }
 
-export default function SidebarNav({ collapsed = false }: SidebarNavProps) {
+export default function SidebarNav({ collapsed = false, onCollapseToggle }: SidebarNavProps) {
   const pathname = usePathname();
 
   return (
@@ -31,6 +35,26 @@ export default function SidebarNav({ collapsed = false }: SidebarNavProps) {
       )}
     >
       <div className="flex flex-col h-full">
+        {/* Sidebar header: collapse toggle and app title */}
+        <div className="flex items-center p-4 border-b border-border">
+          {onCollapseToggle && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="p-2"
+              onClick={onCollapseToggle}
+            >
+              <Menu className="h-5 w-5" />
+            </Button>
+          )}
+          <div className="border-r border-border h-6 px-2" />
+          {!collapsed && (
+            <Link href="/" className="text-lg font-bold">
+              rgtNOW
+            </Link>
+          )}
+        </div>
+        {/* Navigation items */}
         <div className="flex-1 overflow-y-auto p-4 space-y-1">
           {navItems.map((item) => {
             const active = pathname === item.href;
@@ -52,8 +76,14 @@ export default function SidebarNav({ collapsed = false }: SidebarNavProps) {
             );
           })}
         </div>
-        <div className="p-4 border-t border-border">
-          <UserNav />
+        {/* Sidebar footer: user menu */}
+        <div
+          className={cn(
+            "flex items-center p-4 border-t border-border",
+            collapsed ? "justify-center" : ""
+          )}
+        >
+          <UserNav compact={collapsed} />
         </div>
       </div>
     </nav>
