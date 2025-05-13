@@ -1,13 +1,14 @@
  'use client';
 
- import { useState } from 'react';
+import { useState } from 'react';
+import Logo from '../components/Logo';
 
  export default function Page() {
   const [showHowItWorks, setShowHowItWorks] = useState(false);
   return (
     <div className="flex flex-col min-h-screen">
       <nav className="flex justify-between items-center py-4 px-8">
-        <div className="logo-placeholder h-8 w-8 bg-gray-200" />
+        <Logo variant="dark" />
         <a href="/sign-up" className="text-blue-600 hover:underline">
           sign-up / login
         </a>

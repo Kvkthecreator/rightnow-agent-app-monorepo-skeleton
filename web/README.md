@@ -29,6 +29,31 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
+## Static Assets
+
+Place your image and logo assets in the `public/assets` directory:
+- `public/assets/logos/` for logo files (e.g. `rightnow-logo-dark.png`, `rightnow-logo-light.png`)
+- `public/assets/images/` for other images (e.g. `landing-hero.png`)
+
+Files in `public` are served at the root path. For example, an asset at
+`public/assets/logos/rightnow-logo-dark.png` is available at `/assets/logos/rightnow-logo-dark.png`.
+
+Usage examples:
+
+```tsx
+import Image from 'next/image';
+import Logo from '../components/Logo'; // or '@/components/Logo'
+
+// Default logo (32x32)
+<Logo variant="dark" />
+
+// Custom logo size
+<Logo variant="light" width={120} height={40} />
+
+// Other static images
+<Image src="/assets/images/landing-hero.png" alt="Landing Hero" width={600} height={400} />
+```
+
 ## Deploy on Vercel
 
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
