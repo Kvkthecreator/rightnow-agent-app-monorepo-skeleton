@@ -1,6 +1,7 @@
 from app.profilebuilder_agent import profilebuilder_agent
 from agents.run import Runner
 from app.util.webhook import send_webhook          # make sure this import path is right
+from app.util.task_utils import create_task_and_session
 from datetime import datetime
 from fastapi import APIRouter, Request, HTTPException
 import os
@@ -12,13 +13,16 @@ CHAT_WEBHOOK_URL    = os.getenv("CLARIFICATION_WEBHOOK_URL")
 
 @router.post("/profilebuilder")
 async def profilebuilder_handler(req: Request):
-    body    = await req.json()
-    task_id = body.get("task_id")
+    body = await req.json()
+    # Normalize and validate required fields
     user_id = body.get("user_id")
-    prompt  = body.get("prompt") or body.get("user_prompt") or body.get("message")
-
-    if not (task_id and user_id and prompt):
-        raise HTTPException(422, "Missing task_id, user_id, or prompt")
+    prompt = body.get("prompt") or body.get("user_prompt") or body.get("message")
+    if not (user_id and prompt):
+        raise HTTPException(422, "Missing user_id or prompt")
+    # Use provided task_id or create a new session
+    task_id = body.get("task_id")
+    if not task_id:
+        task_id = create_task_and_session(user_id, "profilebuilder")
 
     # 1. Run the agent -------------------------------------------------------------------
     result     = await Runner.run(profilebuilder_agent, prompt)
@@ -59,4 +63,5 @@ async def profilebuilder_handler(req: Request):
             },
         )
 
-    return {"ok": True}
+    # Return normalized chat response
+    return {"type": "text", "message_content": follow_up or ""}

@@ -12,6 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from app.profilebuilder_agent import profilebuilder_agent
 from app.profilebuilder import router as profilebuilder_router
+from app.util.task_utils import create_task_and_session
 
 from agents.tool import WebSearchTool
 
@@ -165,11 +166,13 @@ async def run_agent(req: Request):
     if not prompt:
         raise HTTPException(422, "Missing 'prompt' field")
 
-    # mandatory IDs
+    # mandatory IDs (generate new session if missing)
     task_id = data.get("task_id")
     user_id = data.get("user_id")
-    if not task_id or not user_id:
-        raise HTTPException(422, "Missing 'task_id' or 'user_id'")
+    if not user_id:
+        raise HTTPException(422, "Missing 'user_id'")
+    if not task_id:
+        task_id = create_task_and_session(user_id, "manager")
 
     # 1) Run Manager with error catch for handoff parsing issues
     try:
@@ -230,8 +233,10 @@ async def run_agent_direct(req: Request):
 
     task_id = data.get("task_id")
     user_id = data.get("user_id")
-    if not task_id or not user_id:
-        raise HTTPException(422, "Missing 'task_id' or 'user_id'")
+    if not user_id:
+        raise HTTPException(422, "Missing 'user_id'")
+    if not task_id:
+        task_id = create_task_and_session(user_id, agent.name)
 
     prompt = data.get("prompt") or data.get("message") or ""
     context = {

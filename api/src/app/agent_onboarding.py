@@ -2,11 +2,12 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, HTTPException
 from agents import Agent, Runner
 from datetime import datetime
 import json
 import httpx
+from app.util.task_utils import create_task_and_session
 
 router = APIRouter()
 
@@ -39,7 +40,13 @@ Only reply in this format.
 async def onboard_influencer(request: Request):
     data = await request.json()
     user_input = data.get("input", "")
-    user_id = data.get("user_id", "anonymous")
+    user_id = data.get("user_id")
+    if not user_id:
+        raise HTTPException(422, "Missing 'user_id'")
+    # Generate or reuse task_id for session
+    task_id = data.get("task_id")
+    if not task_id:
+        task_id = create_task_and_session(user_id, "onboarding")
     webhook_url = data.get("webhook_url")
     debug_info = {}
 
@@ -62,6 +69,7 @@ async def onboard_influencer(request: Request):
         debug_info["raw_output"] = result.final_output
 
     session = {
+        "task_id": task_id,
         "agent_type": "onboarding",
         "user_id": user_id,
         "output_type": output_type,
