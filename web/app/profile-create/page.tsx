@@ -35,6 +35,8 @@ export default function ProfileCreatePage() {
   const [step, setStep] = useState<number>(1);
   const [profile, setProfile] = useState<any>(null);
   const [messages, setMessages] = useState<{ sender: 'user' | 'agent'; content: string }[]>([]);
+  // Step 3: collected profile fields for review/edit
+  const [collectedFields, setCollectedFields] = useState<Record<string, string>>({});
   const [input, setInput] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -109,6 +111,31 @@ export default function ProfileCreatePage() {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages]);
+  // Fetch collected fields for Step 3 review when transitioning
+  useEffect(() => {
+    if (step === 3 && profile) {
+      const fetchCollected = async () => {
+        const { data: rows, error } = await supabase
+          .from('agent_messages')
+          .select('message_content')
+          .eq('task_id', profile.id)
+          .eq('message_type', 'profile_partial');
+        if (error) {
+          console.error('Error fetching collected fields:', error);
+          return;
+        }
+        const merged: Record<string, string> = {};
+        (rows || []).forEach((r: any) => {
+          const content = r.message_content;
+          if (content && typeof content === 'object') {
+            Object.assign(merged, content);
+          }
+        });
+        setCollectedFields(merged);
+      };
+      fetchCollected();
+    }
+  }, [step, profile, supabase]);
 
   // Handle sending messages (step 2)
   const handleSend = async (e: React.FormEvent) => {
@@ -140,13 +167,38 @@ export default function ProfileCreatePage() {
         const { error: insertError } = await supabase.from('profile_report_sections').insert(sectionsToInsert);
         if (insertError) console.error('Error inserting sections:', insertError);
       }
-      // Display agent response
-      const agentContent = data.message || JSON.stringify(data);
+      // Display agent response: prefer message_content, then message, else fallback to raw data
+      const agentContent = data.message_content ?? data.message ??
+        (typeof data === 'string' ? data : JSON.stringify(data));
       setMessages((prev) => [...prev, { sender: 'agent', content: agentContent }]);
+      // Auto-transition to Step 3 when step_complete received
+      if (data.type === 'step_complete') {
+        // delay slightly to show final message
+        setTimeout(() => setStep(3), 500);
+      }
     } catch (error) {
       console.error('Error sending message:', error);
     } finally {
       setLoading(false);
+    }
+  };
+  // Handle generating insight report (Step 3)
+  const handleGenerate = async () => {
+    if (!session || !profile) return;
+    try {
+      const res = await fetch('/api/profile_analyzer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ task_id: profile.id, user_id: session.user.id }),
+      });
+      if (!res.ok) {
+        console.error('Error generating insight report:', await res.text());
+        return;
+      }
+      const data = await res.json();
+      console.log('Insight report response:', data);
+    } catch (error) {
+      console.error('Error generating insight report:', error);
     }
   };
 
@@ -185,7 +237,11 @@ export default function ProfileCreatePage() {
   return (
     <div className="max-w-3xl mx-auto p-6">
       <h1 className="text-2xl font-bold mb-6">
-        {step === 1 ? 'Step 1 of 2: Basic Profile Info' : 'Step 2 of 2: Agent Chat'}
+        {step === 1
+          ? 'Step 1 of 3: Basic Profile Info'
+          : step === 2
+          ? 'Step 2 of 3: Agent Chat'
+          : 'Step 3 of 3: Review Your Profile'}
       </h1>
       {step === 1 ? (
         <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 gap-4">
@@ -225,7 +281,7 @@ export default function ProfileCreatePage() {
           <TextareaField control={control} name="comments" label="Comments" placeholder="Any additional info" />
           <Button type="submit">Next</Button>
         </form>
-      ) : (
+      ) : step === 2 ? (
         <div className="flex flex-col h-[70vh]">
           <Button variant="outline" size="sm" className="mb-2 w-fit" onClick={() => setStep(1)}>
             Back
@@ -258,6 +314,58 @@ export default function ProfileCreatePage() {
               Send
             </Button>
           </form>
+        </div>
+      ) : (
+        <div className="max-w-3xl mx-auto p-6">
+          <h2 className="text-xl font-semibold mb-4">Review Your Profile</h2>
+          <div className="overflow-x-auto border rounded p-4">
+            <table className="table-auto w-full text-left">
+              <thead>
+                <tr>
+                  <th className="px-2 py-1 border-b">Field</th>
+                  <th className="px-2 py-1 border-b">Value</th>
+                  <th className="px-2 py-1 border-b">Edit</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Object.entries(collectedFields).map(([key, value]) => (
+                  <tr key={key}>
+                    <td className="px-2 py-1 border-b">{key}</td>
+                    <td className="px-2 py-1 border-b">{value || <em>(blank)</em>}</td>
+                    <td className="px-2 py-1 border-b">
+                      <button
+                        className="text-blue-500 hover:underline"
+                        onClick={async () => {
+                          const newVal = prompt(`Edit ${key}`, value);
+                          if (newVal !== null) {
+                            setCollectedFields(prev => ({ ...prev, [key]: newVal }));
+                            const { error } = await supabase
+                              .from('agent_messages')
+                              .insert([
+                                {
+                                  task_id: profile.id,
+                                  user_id: session.user.id,
+                                  agent_type: 'profilebuilder',
+                                  message_type: 'profile_partial',
+                                  message_content: { [key]: newVal },
+                                  created_at: new Date().toISOString(),
+                                },
+                              ]);
+                            if (error) console.error('Error updating field:', error);
+                          }
+                        }}
+                      >
+                        Edit
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <Button className="mt-4" onClick={handleGenerate}>
+            Generate Insight Report
+          </Button>
         </div>
       )}
     </div>
