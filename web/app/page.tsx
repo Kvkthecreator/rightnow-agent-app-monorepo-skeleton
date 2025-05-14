@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import Logo from '../components/Logo';
+import Link from 'next/link';
+import { Button } from '../components/ui/Button';
 
  export default function Page() {
   const [showHowItWorks, setShowHowItWorks] = useState(false);
@@ -9,9 +11,9 @@ import Logo from '../components/Logo';
     <div className="flex flex-col min-h-screen">
       <nav className="flex justify-between items-center py-4 px-8">
         <Logo variant="dark" />
-        <a href="/sign-up" className="text-blue-600 hover:underline">
-          sign-up / login
-        </a>
+        <Button asChild variant="ghost" size="sm">
+          <Link href="/login">Sign up / Login</Link>
+        </Button>
       </nav>
 
       <main className="flex-grow">
@@ -23,18 +25,12 @@ import Logo from '../components/Logo';
             but not sure what&apos;s your niche? or where to start?
           </p>
           <div className="flex space-x-4">
-            <button
-              onClick={() => setShowHowItWorks(!showHowItWorks)}
-              className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
-            >
-              tell me how it works
-            </button>
-            <a
-              href="#"
-              className="px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
-            >
-              create profile
-            </a>
+            <Button variant="outline" onClick={() => setShowHowItWorks(!showHowItWorks)}>
+              Tell me how it works
+            </Button>
+            <Button asChild>
+              <Link href="/profile-create">Create Profile</Link>
+            </Button>
           </div>
         </section>
 

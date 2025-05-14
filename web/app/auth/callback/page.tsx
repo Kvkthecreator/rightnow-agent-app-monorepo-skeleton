@@ -17,7 +17,9 @@ export default function AuthCallbackPage() {
           console.error('Error exchanging code for session:', error);
           router.replace('/login');
         } else {
-          router.replace('/demo');
+          const redirectPath = localStorage.getItem("postLoginRedirect") || "/";
+          router.replace(redirectPath);
+          localStorage.removeItem("postLoginRedirect");
         }
       } catch (err) {
         console.error("Error handling auth callback:", err);

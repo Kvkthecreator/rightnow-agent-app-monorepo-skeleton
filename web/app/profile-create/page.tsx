@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
-import { useSupabaseClient, useSession } from "@supabase/auth-helpers-react";
+import { useSupabaseClient, useSessionContext } from "@supabase/auth-helpers-react";
 import { useRouter } from "next/navigation";
 import { TextInputField } from "@/components/ui/TextInputField";
 import { TextareaField } from "@/components/ui/TextareaField";
@@ -30,7 +30,7 @@ interface ProfileFormValues {
 export default function ProfileCreatePage() {
   const router = useRouter();
   const supabase = useSupabaseClient();
-  const session = useSession();
+  const { session, isLoading } = useSessionContext();
 
   const [step, setStep] = useState<number>(1);
   const [profile, setProfile] = useState<any>(null);
@@ -39,13 +39,13 @@ export default function ProfileCreatePage() {
   const [loading, setLoading] = useState<boolean>(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Redirect if not authenticated
   useEffect(() => {
-    if (session === undefined) return;
+    if (isLoading) return;
     if (!session) {
-      router.replace('/login');
+      localStorage.setItem("postLoginRedirect", window.location.pathname);
+      router.replace("/login");
     }
-  }, [session, router]);
+  }, [session, isLoading, router]);
 
   // Form setup (step 1)
   const { control, handleSubmit, watch } = useForm<ProfileFormValues>({
@@ -150,7 +150,7 @@ export default function ProfileCreatePage() {
     }
   };
 
-  if (!session) {
+  if (isLoading) {
     return null;
   }
 

@@ -7,36 +7,21 @@ import { SelectField } from "@/components/ui/SelectField";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { createClient } from "@/lib/supabaseClient";
+import { useEffect } from "react";
+import { useSessionContext } from "@supabase/auth-helpers-react";
 
 export default function DemoPage() {
-  const supabase = createClient();
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(true);
+  const { session, isLoading } = useSessionContext();
   const { control, handleSubmit } = useForm({ defaultValues: { firstName: "", bio: "", role: "" } });
 
-  // Protect route: redirect to login if not authenticated
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) {
-        router.replace("/login");
-      } else {
-        setIsLoading(false);
-      }
-    });
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log("[Auth]", event, session);
-      if (!session) {
-        router.replace("/login");
-      }
-    });
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [router, supabase]);
+    if (isLoading) return;
+    if (!session) {
+      localStorage.setItem("postLoginRedirect", window.location.pathname);
+      router.replace("/login");
+    }
+  }, [session, isLoading, router]);
 
   if (isLoading) {
     return null;
