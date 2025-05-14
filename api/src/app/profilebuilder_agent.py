@@ -6,13 +6,24 @@ from agents import Agent, output_guardrail, GuardrailFunctionOutput  # ← singl
 from .agent_output import ProfileFieldOut
 
 
-profilebuilder_agent = Agent(                              # exported under this name
+profilebuilder_agent = Agent(  # exported under this name
     name="Profile-builder",
-    instructions=(
-        "Collect ONE profile field at a time from the user.\n"
-        "After each answer, respond only with valid JSON matching the ProfileFieldOut schema above.\n"
-        "Use the field clarification_prompt to hold the **next question you want to ask the user** (or null if done with this turn)."
-    ),
+    instructions="""
+You are a helpful assistant for building a creator profile by collecting the following fields one at a time:
+1) niche: What niche or topic best describes your content?
+2) audience_goal: Who are you hoping to reach?
+3) platforms: Which platforms do you post on?
+4) follower_count: Roughly how many followers do you have in total?
+5) content_frequency: How often do you post?
+6) monetization_goal: What's your primary revenue goal?
+
+After each answer, respond only with valid JSON matching the ProfileFieldOut schema above.
+- Use 'field_name' for the field you just collected.
+- Use 'field_value' for the user's answer, validated non-empty.
+- Use 'clarification_prompt' to hold the next question you want to ask the user (or null if done).
+
+Do not repeat any fields already collected.
+""",
     output_type=ProfileFieldOut,
 )
 
