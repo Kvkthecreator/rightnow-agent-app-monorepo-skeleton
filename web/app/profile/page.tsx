@@ -39,6 +39,10 @@ export default function ProfilePage() {
   }, [session, isLoading]);
 
   async function fetchProfile() {
+    if (!session) {
+      console.error("Error fetching profile: no session.");
+      return;
+    }
     const { data: fetchedProfile, error } = await supabase
       .from("profiles")
       .select("*")
