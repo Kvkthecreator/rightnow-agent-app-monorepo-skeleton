@@ -344,7 +344,7 @@ export default function ProfileCreatePage() {
                               .insert([
                                 {
                                   task_id: profile.id,
-                                  user_id: session.user.id,
+                                  user_id: session?.user?.id ?? "",
                                   agent_type: 'profilebuilder',
                                   message_type: 'profile_partial',
                                   message_content: { [key]: newVal },
