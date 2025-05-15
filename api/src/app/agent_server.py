@@ -13,6 +13,8 @@ from pydantic import BaseModel
 from app.profilebuilder_agent import profilebuilder_agent
 from app.profilebuilder import router as profilebuilder_router
 from app.util.task_utils import create_task_and_session
+from app.util.webhook import send_webhook as util_send_webhook
+from app.profile_analyzer_agent import profile_analyzer_agent
 
 from agents.tool import WebSearchTool
 
@@ -268,3 +270,46 @@ async def run_agent_direct(req: Request):
     )
     await send_webhook(flatten_payload(payload))
     return {"ok": True}
+
+@app.post("/profile_analyzer")
+async def profile_analyzer_endpoint(request: Request):
+    # Parse and validate request body
+    try:
+        body = await request.json()
+    except Exception:
+        raise HTTPException(400, "Invalid JSON body")
+    task_id = body.get("task_id")
+    user_id = body.get("user_id")
+    profile = body.get("profile")
+    if not task_id:
+        raise HTTPException(422, "Missing 'task_id'")
+    if not user_id:
+        raise HTTPException(422, "Missing 'user_id'")
+    if not profile or not isinstance(profile, dict):
+        raise HTTPException(422, "Missing or invalid 'profile'")
+    print(f"[/profile_analyzer] Received payload: {body}")
+    # Generate insight report
+    try:
+        result = profile_analyzer_agent(profile)
+    except Exception as e:
+        print(f"[/profile_analyzer] Error running profile_analyzer_agent: {e}")
+        raise HTTPException(500, "Error processing profile")
+    print(f"[/profile_analyzer] Agent result: {result}")
+    # Build webhook payload
+    hook_payload = {
+        "task_id": task_id,
+        "user_id": user_id,
+        "agent_type": "profileanalyzer",
+        "message_type": "profile_report",
+        "message_content": result,
+        "created_at": datetime.utcnow().isoformat()
+    }
+    webhook_url = "https://helpmeaiai.bubbleapps.io/version-test/api/1.1/wf/bewf_profile_report_webhook/"
+    # Send webhook
+    try:
+        await util_send_webhook(webhook_url, hook_payload)
+    except Exception as e:
+        print(f"[/profile_analyzer] Error sending webhook: {e}")
+        raise HTTPException(500, "Error sending webhook")
+    # Return the insight report
+    return result
