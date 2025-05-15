@@ -11,8 +11,9 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
+    "jsx": "react-jsx",                     // ✅ changed from "preserve"
     "incremental": true,
+    "types": ["react", "react-dom"],        // ✅ added to support JSX namespace
     "plugins": [
       {
         "name": "next"
