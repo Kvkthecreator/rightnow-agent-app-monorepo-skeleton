@@ -306,7 +306,8 @@ async def profile_analyzer_endpoint(request: Request):
         "message_content": result,
         "created_at": datetime.utcnow().isoformat()
     }
-    webhook_url = "https://helpmeaiai.bubbleapps.io/version-test/api/1.1/wf/bewf_profile_report_webhook/"
+    # POST report to new frontend endpoint instead of legacy Bubble webhook
+    webhook_url = "https://rightnow-agent-app-fullstack.vercel.app/api/receive_report"
     # Send webhook
     try:
         await util_send_webhook(webhook_url, hook_payload)
