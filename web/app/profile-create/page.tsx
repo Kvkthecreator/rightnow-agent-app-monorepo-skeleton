@@ -9,6 +9,15 @@ import { TextareaField } from "@/components/ui/TextareaField";
 import { SelectField } from "@/components/ui/SelectField";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import ProfileInsightReport from "@/components/ProfileInsightReport";
+
+// Type for insight report data
+interface InsightReport {
+  summary_markdown: string;
+  strengths: string[];
+  blindspots: string[];
+  next_steps: string[];
+}
 // Map of SNS base URLs for prefixing handle input
 const snsBaseUrlMap: Record<string, string> = {
   Instagram: "https://instagram.com/",
@@ -39,6 +48,9 @@ export default function ProfileCreatePage() {
   const [collectedFields, setCollectedFields] = useState<Record<string, string>>({});
   const [input, setInput] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
+  // Step 4: insight report data and loading state
+  const [reportData, setReportData] = useState<InsightReport | null>(null);
+  const [reportLoading, setReportLoading] = useState<boolean>(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -185,20 +197,29 @@ export default function ProfileCreatePage() {
   // Handle generating insight report (Step 3)
   const handleGenerate = async () => {
     if (!session || !profile) return;
+    setReportLoading(true);
     try {
       const res = await fetch('/api/profile_analyzer', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ task_id: profile.id, user_id: session.user.id }),
+        body: JSON.stringify({
+          task_id: profile.id,
+          user_id: session.user.id,
+          profile: collectedFields,
+        }),
       });
       if (!res.ok) {
         console.error('Error generating insight report:', await res.text());
         return;
       }
-      const data = await res.json();
+      const data: InsightReport = await res.json();
       console.log('Insight report response:', data);
+      setReportData(data);
+      setStep(4);
     } catch (error) {
       console.error('Error generating insight report:', error);
+    } finally {
+      setReportLoading(false);
     }
   };
 
@@ -238,10 +259,12 @@ export default function ProfileCreatePage() {
     <div className="max-w-3xl mx-auto p-6">
       <h1 className="text-2xl font-bold mb-6">
         {step === 1
-          ? 'Step 1 of 3: Basic Profile Info'
+          ? 'Step 1 of 4: Basic Profile Info'
           : step === 2
-          ? 'Step 2 of 3: Agent Chat'
-          : 'Step 3 of 3: Review Your Profile'}
+          ? 'Step 2 of 4: Agent Chat'
+          : step === 3
+          ? 'Step 3 of 4: Review Your Profile'
+          : 'Step 4 of 4: Your Insight Report'}
       </h1>
       {step === 1 ? (
         <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 gap-4">
@@ -315,7 +338,7 @@ export default function ProfileCreatePage() {
             </Button>
           </form>
         </div>
-      ) : (
+      ) : step === 3 ? (
         <div className="max-w-3xl mx-auto p-6">
           <h2 className="text-xl font-semibold mb-4">Review Your Profile</h2>
           <div className="overflow-x-auto border rounded p-4">
@@ -363,11 +386,18 @@ export default function ProfileCreatePage() {
               </tbody>
             </table>
           </div>
-          <Button className="mt-4" onClick={handleGenerate}>
-            Generate Insight Report
+          <Button className="mt-4" onClick={handleGenerate} disabled={reportLoading}>
+            {reportLoading ? 'Generating your insight report...' : 'Generate Insight Report'}
           </Button>
         </div>
-      )}
+      ) : step === 4 && reportData ? (
+        <ProfileInsightReport
+          summary_markdown={reportData.summary_markdown}
+          strengths={reportData.strengths}
+          blindspots={reportData.blindspots}
+          next_steps={reportData.next_steps}
+        />
+      ) : null}
     </div>
   );
 }

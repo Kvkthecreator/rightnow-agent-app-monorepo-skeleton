@@ -158,7 +158,10 @@ app.add_middleware(
 )
 app.include_router(profilebuilder_router)
 
-@app.post("/agent")
+# Include legacy agent endpoints
+from app.legacy_agent_router import router as legacy_agent_router
+app.include_router(legacy_agent_router)
+
 async def run_agent(req: Request):
     data    = await req.json()
     # normalize prompt
@@ -224,7 +227,6 @@ async def run_agent(req: Request):
 
     return {"ok": True}
 
-@app.post("/agent_direct")
 async def run_agent_direct(req: Request):
     data = await req.json()
 
