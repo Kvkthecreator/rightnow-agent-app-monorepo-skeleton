@@ -1,6 +1,6 @@
 # agent_entrypoints.py
 from fastapi import Request
-from app.agents.run import Runner
+from agents import Runner
 from app.util.webhook import send_webhook
 import json
 
